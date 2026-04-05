@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RideGo | Fast city rides in minutes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon">R</div>
+      <div>
+        <h1>RideGo </h1>
+        <p>Fast city rides in minutes</p>
+      </div>
+    </div>
+    <button class="top-btn">Login</button>
+  </header>
+
+  <main class="app-shell">
+    <section class="hero">
+      <div class="hero-text">
+        <span class="mini-tag">Live cab booking</span>
+        <h2>Book your ride in seconds.</h2>
+        <p>
+          Real-time ride booking interface with pickup, drop, fare estimate,
+          live status, and map section for your cab app project.
+        </p>
+
+        <div class="status-strip">
+          <div class="status-chip active">Online cabs</div>
+          <div class="status-chip">Avg ETA 4 min</div>
+          <div class="status-chip">Sedan available</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="booking-layout">
+      <div class="booking-panel">
+        <h3>Book a ride</h3>
+
+        <div class="input-group">
+          <label for="name">Full name</label>
+          <input type="text" id="name" placeholder="Enter your name">
+        </div>
+
+        <div class="input-group">
+          <label for="phone">Phone number</label>
+          <input type="text" id="phone" placeholder="Enter your phone number">
+        </div>
+
+        <div class="input-group">
+          <label for="pickup">Pickup location</label>
+          <input type="text" id="pickup" placeholder="Enter pickup point">
+        </div>
+
+        <div class="input-group">
+          <label for="drop">Drop location</label>
+          <input type="text" id="drop" placeholder="Enter destination">
+        </div>
+
+        <div class="two-col">
+          <div class="input-group">
+            <label for="date">Date</label>
+            <input type="date" id="date">
+          </div>
+
+          <div class="input-group">
+            <label for="time">Time</label>
+            <input type="time" id="time">
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="input-group">
+            <label for="distance">Distance (km)</label>
+            <input type="number" id="distance" placeholder="12">
+          </div>
+
+          <div class="input-group">
+            <label for="rideType">Ride type</label>
+            <select id="rideType">
+              <option value="Mini">Mini</option>
+              <option value="Sedan" selected>Sedan</option>
+              <option value="SUV">SUV</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button class="primary-btn" onclick="showBookingDetails()">Check fare</button>
+          <button class="secondary-btn" onclick="sendToWhatsApp()">Book on WhatsApp</button>
+        </div>
+      </div>
+
+      <div class="side-panel">
+        <div class="ride-card">
+          <div class="ride-head">
+            <div>
+              <p class="small-label">Recommended ride</p>
+              <h3>RideGo Sedan</h3>
+            </div>
+            <span class="price-badge" id="farePreview">₹0</span>
+          </div>
+
+          <ul class="ride-features">
+            <li>4 seats</li>
+            <li>AC ride</li>
+            <li>Cashless option</li>
+            <li>Quick city pickup</li>
+          </ul>
+        </div>
+
+        <div class="map-card">
+          <h3>Live map area</h3>
+          <div class="map-placeholder">
+            <div class="pin pickup-pin">Pickup</div>
+            <div class="route-line"></div>
+            <div class="pin drop-pin">Drop</div>
+            <div class="car-icon">🚖</div>
+          </div>
+        </div>
+
+        <div class="summary-card" id="bookingDetails">
+          <h3>Booking summary</h3>
+          <p>Your booking details will appear here.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
