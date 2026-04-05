@@ -9,7 +9,7 @@ function calculateFare(distance, rideType) {
     ratePerKm = 22;
   }
 
-  const baseFare = 49;
+  const baseFare = 500;
   return Math.round(baseFare + distance * ratePerKm);
 }
 
@@ -104,7 +104,7 @@ function sendToWhatsApp() {
     return;
   }
 
-  const adminNumber = "8073451021";
+  const adminNumber = "+919989556929";
 
   const message = `RideGo Booking
 Name: ${latestBooking.name}
