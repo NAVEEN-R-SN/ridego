@@ -148,8 +148,6 @@ function startBookingFlow() {
     { status: "Searching for nearby driver...", driver: "Finding...", cab: "--", eta: currentEta, pos: 0 },
     { status: "Driver assigned", driver: "Arun Kumar", cab: "TS09AB1234", eta: currentEta, pos: 1 },
     { status: "Driver arriving", driver: "Arun Kumar", cab: "TS09AB1234", eta: "3 min", pos: 2 },
-    { status: "Trip started", driver: "Arun Kumar", cab: "TS09AB1234", eta: "On route", pos: 3 },
-    { status: "Trip completed", driver: "Arun Kumar", cab: "TS09AB1234", eta: "Completed", pos: 4 }
   ];
 
   steps.forEach((step, index) => {
