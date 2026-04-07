@@ -1,122 +1,225 @@
-let latestBooking = null;
+const loginBtn = document.getElementById("loginBtn");
+const loginDialog = document.getElementById("loginDialog");
+const demoLoginBtn = document.getElementById("demoLoginBtn");
 
-function calculateFare(distance, rideType) {
-  let ratePerKm = 12;
+const infoDialog = document.getElementById("infoDialog");
+const infoTitle = document.getElementById("infoTitle");
+const infoText = document.getElementById("infoText");
+const closeInfoBtn = document.getElementById("closeInfoBtn");
 
-  if (rideType === "Sedan") {
-    ratePerKm = 16;
-  } else if (rideType === "SUV") {
-    ratePerKm = 22;
+const onlineCabsBtn = document.getElementById("onlineCabsBtn");
+const etaBtn = document.getElementById("etaBtn");
+const sedanInfoBtn = document.getElementById("sedanInfoBtn");
+
+const locateBtn = document.getElementById("locateBtn");
+const fareBtn = document.getElementById("fareBtn");
+const bookBtn = document.getElementById("bookBtn");
+const whatsappBtn = document.getElementById("whatsappBtn");
+
+const nameInput = document.getElementById("name");
+const phoneInput = document.getElementById("phone");
+const pickupInput = document.getElementById("pickup");
+const dropInput = document.getElementById("drop");
+const distanceInput = document.getElementById("distance");
+
+const bookingStatus = document.getElementById("bookingStatus");
+const fareOutput = document.getElementById("fareOutput");
+const rideOutput = document.getElementById("rideOutput");
+const driverOutput = document.getElementById("driverOutput");
+const cabOutput = document.getElementById("cabOutput");
+const etaOutput = document.getElementById("etaOutput");
+const cabMarker = document.getElementById("cabMarker");
+
+const rideButtons = document.querySelectorAll(".ride-btn");
+
+let selectedRide = "Mini";
+let selectedRate = 12;
+let currentFare = 0;
+let currentEta = "4 min";
+
+rideButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    rideButtons.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    selectedRide = btn.dataset.ride;
+    selectedRate = Number(btn.dataset.rate);
+    rideOutput.textContent = selectedRide;
+  });
+});
+
+function openInfo(title, text) {
+  infoTitle.textContent = title;
+  infoText.textContent = text;
+  infoDialog.showModal();
+}
+
+loginBtn.addEventListener("click", () => {
+  loginDialog.showModal();
+});
+
+demoLoginBtn.addEventListener("click", () => {
+  loginDialog.close();
+  openInfo("Login Success", "Demo login successful. You can now continue booking your ride.");
+});
+
+closeInfoBtn.addEventListener("click", () => {
+  infoDialog.close();
+});
+
+onlineCabsBtn.addEventListener("click", () => {
+  openInfo("Online Cabs", "12 cabs are currently active near your area.");
+});
+
+etaBtn.addEventListener("click", () => {
+  openInfo("Average ETA", "Average pickup time is around 4 minutes right now.");
+});
+
+sedanInfoBtn.addEventListener("click", () => {
+  openInfo("Sedan Available", "Sedan rides are available with comfortable city travel.");
+});
+
+locateBtn.addEventListener("click", () => {
+  if (!navigator.geolocation) {
+    openInfo("Location Error", "Geolocation is not supported in this browser.");
+    return;
+  }
+
+  bookingStatus.textContent = "Detecting current location...";
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lat = position.coords.latitude.toFixed(5);
+      const lng = position.coords.longitude.toFixed(5);
+      pickupInput.value = `Current Location (${lat}, ${lng})`;
+      bookingStatus.textContent = "Current location detected";
+    },
+    () => {
+      bookingStatus.textContent = "Location access denied";
+      openInfo("Permission Needed", "Please allow location access to auto-fill pickup.");
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+});
+
+function calculateFare() {
+  const distance = Number(distanceInput.value);
+  if (!distance || distance <= 0) {
+    openInfo("Missing Distance", "Please enter a valid distance in kilometers.");
+    return 0;
   }
 
   const baseFare = 500;
-  return Math.round(baseFare + distance * ratePerKm);
+  const demandCharge = 20;
+  currentFare = baseFare + distance * selectedRate + demandCharge;
+  currentEta = Math.max(3, Math.round(distance / 5) + 2) + " min";
+
+  fareOutput.textContent = `₹${currentFare}`;
+  etaOutput.textContent = currentEta;
+  rideOutput.textContent = selectedRide;
+
+  return currentFare;
 }
 
-function showBookingDetails() {
-  const name = document.getElementById("name").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const pickup = document.getElementById("pickup").value.trim();
-  const drop = document.getElementById("drop").value.trim();
-  const date = document.getElementById("date").value;
-  const time = document.getElementById("time").value;
-  const distance = parseFloat(document.getElementById("distance").value);
-  const rideType = document.getElementById("rideType").value;
+fareBtn.addEventListener("click", () => {
+  const fare = calculateFare();
+  if (fare > 0) {
+    bookingStatus.textContent = "Fare calculated";
+  }
+});
 
-  if (!name || !phone || !pickup || !drop || !date || !time || !distance) {
-    alert("Please fill all fields.");
-    return;
+function validateBooking() {
+  if (!nameInput.value.trim() || !phoneInput.value.trim() || !pickupInput.value.trim() || !dropInput.value.trim()) {
+    openInfo("Missing Details", "Please fill name, phone, pickup, and drop location.");
+    return false;
+  }
+  if (!distanceInput.value.trim()) {
+    openInfo("Missing Distance", "Please enter trip distance.");
+    return false;
+  }
+  return true;
+}
+
+function moveCab(step) {
+  const positions = ["15%", "35%", "55%", "75%", "88%"];
+  cabMarker.style.left = positions[step] || "88%";
+}
+
+function startBookingFlow() {
+  const steps = [
+    { status: "Searching for nearby driver...", driver: "Finding...", cab: "--", eta: currentEta, pos: 0 },
+    { status: "Driver assigned", driver: "Arun Kumar", cab: "TS09AB1234", eta: currentEta, pos: 1 },
+    { status: "Driver arriving", driver: "Arun Kumar", cab: "TS09AB1234", eta: "3 min", pos: 2 },
+    { status: "Trip started", driver: "Arun Kumar", cab: "TS09AB1234", eta: "On route", pos: 3 },
+    { status: "Trip completed", driver: "Arun Kumar", cab: "TS09AB1234", eta: "Completed", pos: 4 }
+  ];
+
+  steps.forEach((step, index) => {
+    setTimeout(() => {
+      bookingStatus.textContent = step.status;
+      driverOutput.textContent = step.driver;
+      cabOutput.textContent = step.cab;
+      etaOutput.textContent = step.eta;
+      moveCab(step.pos);
+    }, index * 3000);
+  });
+}
+
+bookBtn.addEventListener("click", () => {
+  if (!validateBooking()) return;
+
+  if (currentFare === 0) {
+    calculateFare();
   }
 
-  const fare = calculateFare(distance, rideType);
-  document.getElementById("farePreview").textContent = `₹${fare}`;
+  bookingStatus.textContent = "Booking confirmed";
+  openInfo("Booking Confirmed", `Your ${selectedRide} ride has been confirmed. Estimated fare is ₹${currentFare}.`);
+  startBookingFlow();
+});
 
-  latestBooking = {
-    name,
-    phone,
-    pickup,
-    drop,
-    date,
-    time,
-    distance,
-    rideType,
-    fare
-  };
+wwhatsappBtn.addEventListener("click", () => {
+  if (!validateBooking()) return;
 
-  const bookingDetails = document.getElementById("bookingDetails");
+  if (currentFare === 0) {
+    calculateFare();
+  }
 
-  bookingDetails.innerHTML = `
-    <h3>Booking summary</h3>
-    <p class="summary-line"><strong>Name:</strong> ${name}</p>
-    <p class="summary-line"><strong>Phone:</strong> ${phone}</p>
-    <p class="summary-line"><strong>Pickup:</strong> ${pickup}</p>
-    <p class="summary-line"><strong>Drop:</strong> ${drop}</p>
-    <p class="summary-line"><strong>Date:</strong> ${date}</p>
-    <p class="summary-line"><strong>Time:</strong> ${time}</p>
-    <p class="summary-line"><strong>Ride:</strong> ${rideType}</p>
-    <p class="summary-line"><strong>Distance:</strong> ${distance} km</p>
-    <p class="summary-line"><strong>Estimated fare:</strong> ₹${fare}</p>
-    <p class="summary-line"><strong>Status:</strong> Searching for nearby driver...</p>
-  `;
+  const adminNumber = "919989556929"; // replace with your admin WhatsApp number
 
-  setTimeout(() => {
-    bookingDetails.innerHTML = `
-      <h3>Booking summary</h3>
-      <p class="summary-line"><strong>Name:</strong> ${name}</p>
-      <p class="summary-line"><strong>Phone:</strong> ${phone}</p>
-      <p class="summary-line"><strong>Pickup:</strong> ${pickup}</p>
-      <p class="summary-line"><strong>Drop:</strong> ${drop}</p>
-      <p class="summary-line"><strong>Date:</strong> ${date}</p>
-      <p class="summary-line"><strong>Time:</strong> ${time}</p>
-      <p class="summary-line"><strong>Ride:</strong> ${rideType}</p>
-      <p class="summary-line"><strong>Distance:</strong> ${distance} km</p>
-      <p class="summary-line"><strong>Estimated fare:</strong> ₹${fare}</p>
-      <p class="summary-line"><strong>Driver:</strong> Arun Kumar</p>
-      <p class="summary-line"><strong>Cab No:</strong> KA 05 MJ 2481</p>
-      <p class="summary-line"><strong>ETA:</strong> 4 min</p>
-      <p class="summary-line"><strong>Status:</strong> Driver assigned</p>
-    `;
-  }, 2000);
+  const message = `New RideGo Booking
+Name: ${nameInput.value}
+Phone: ${phoneInput.value}
+Pickup: ${pickupInput.value}
+Drop: ${dropInput.value}
+Distance: ${distanceInput.value} km
+Ride Type: ${selectedRide}
+Fare: ₹${currentFare}
+Status: ${bookingStatus.textContent}`;
 
-  setTimeout(() => {
-    bookingDetails.innerHTML = `
-      <h3>Booking summary</h3>
-      <p class="summary-line"><strong>Name:</strong> ${name}</p>
-      <p class="summary-line"><strong>Phone:</strong> ${phone}</p>
-      <p class="summary-line"><strong>Pickup:</strong> ${pickup}</p>
-      <p class="summary-line"><strong>Drop:</strong> ${drop}</p>
-      <p class="summary-line"><strong>Date:</strong> ${date}</p>
-      <p class="summary-line"><strong>Time:</strong> ${time}</p>
-      <p class="summary-line"><strong>Ride:</strong> ${rideType}</p>
-      <p class="summary-line"><strong>Distance:</strong> ${distance} km</p>
-      <p class="summary-line"><strong>Estimated fare:</strong> ₹${fare}</p>
-      <p class="summary-line"><strong>Driver:</strong> Arun Kumar</p>
-      <p class="summary-line"><strong>Cab No:</strong> KA 05 MJ 2481</p>
-      <p class="summary-line"><strong>ETA:</strong> 2 min</p>
-      <p class="summary-line"><strong>Status:</strong> Driver arriving</p>
-    `;
-  }, 4000);
-}
-
+  const url = `https://wa.me/${adminNumber}?text=${encodeURIComponent(message)}`;
+  window.open(url, "_blank");
+});
 function sendToWhatsApp() {
-  if (!latestBooking) {
-    alert("Please click Check fare first.");
+  let name = document.getElementById("name");
+  let phone = document.getElementById("phone");
+  let pickup = document.getElementById("pickup");
+  let drop = document.getElementById("drop");
+  let distance = document.getElementById("distance");
+
+  if (!name || !phone || !pickup || !drop || !distance) {
+    alert("One or more input IDs are wrong");
     return;
   }
 
-  const adminNumber = "+919989556929";
+  let adminNumber = "919989556929";
 
-  const message = `RideGo Booking
-Name: ${latestBooking.name}
-Phone: ${latestBooking.phone}
-Pickup: ${latestBooking.pickup}
-Drop: ${latestBooking.drop}
-Date: ${latestBooking.date}
-Time: ${latestBooking.time}
-Ride: ${latestBooking.rideType}
-Distance: ${latestBooking.distance} km
-Estimated Fare: ₹${latestBooking.fare}`;
+  let message =
+    "New RideGo Booking\n" +
+    "Name: " + name.value + "\n" +
+    "Phone: " + phone.value + "\n" +
+    "Pickup: " + pickup.value + "\n" +
+    "Drop: " + drop.value + "\n" +
+    "Distance: " + distance.value + " km";
 
-  const whatsappURL = `https://wa.me/${adminNumber}?text=${encodeURIComponent(message)}`;
-  window.open(whatsappURL, "_blank");
+  let url = "https://wa.me/" + adminNumber + "?text=" + encodeURIComponent(message);
+
+  window.open(url, "_blank");
 }
