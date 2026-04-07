@@ -31,7 +31,19 @@ const etaOutput = document.getElementById("etaOutput");
 const cabMarker = document.getElementById("cabMarker");
 
 const rideButtons = document.querySelectorAll(".ride-btn");
-
+const drivers = {
+  mini: [
+    { name: "Balaji", vehicle: "AP37TV5657", phone: "8500434569" },
+    { name: "Prasad", vehicle: "AP37TV2929", phone: "9704732417" }
+  ],
+  sedan: [
+    { name: "Sekhar", vehicle: "AP31TV0101", phone: "9492636929" },
+    { name: "Hemanth", vehicle: "AP39NR3447", phone: "9625222444" }
+  ],
+  suv: [
+    { name: "Murali", vehicle: "AP37TV7399", phone: "8328672801" }
+  ]
+};
 let selectedRide = "Mini";
 let selectedRate = 12;
 let currentFare = 0;
@@ -144,10 +156,13 @@ function moveCab(step) {
 }
 
 function startBookingFlow() {
+  const availableDrivers = drivers[selectedRide.toLowerCase()] || drivers.mini;
+  const randomDriver = availableDrivers[Math.floor(Math.random() * availableDrivers.length)];
+
   const steps = [
     { status: "Searching for nearby driver...", driver: "Finding...", cab: "--", eta: currentEta, pos: 0 },
-    { status: "Driver assigned", driver: "Arun Kumar", cab: "TS09AB1234", eta: currentEta, pos: 1 },
-    { status: "Driver arriving", driver: "Arun Kumar", cab: "TS09AB1234", eta: "3 min", pos: 2 },
+    { status: "Driver assigned", driver: randomDriver.name, cab: randomDriver.vehicle, eta: currentEta, pos: 1 },
+    { status: "Driver arriving", driver: randomDriver.name, cab: randomDriver.vehicle, eta: "3 min", pos: 2 }
   ];
 
   steps.forEach((step, index) => {
@@ -176,6 +191,9 @@ document.getElementById("whatsappBtn").addEventListener("click", function() {
   if (!validateBooking()) return;
   if (currentFare === 0) calculateFare();
 
+  const availableDrivers = drivers[selectedRide.toLowerCase()] || drivers.mini;
+  const randomDriver = availableDrivers[Math.floor(Math.random() * availableDrivers.length)];
+
   const adminNumber = "919989556929";
   const message = `New RideGo Booking
 Name: ${nameInput.value}
@@ -185,6 +203,9 @@ Drop: ${dropInput.value}
 Distance: ${distanceInput.value} km
 Ride Type: ${selectedRide}
 Fare: Rs ${currentFare}
+Driver: ${randomDriver.name}
+Cab Number: ${randomDriver.vehicle}
+Driver Phone: ${randomDriver.phone}
 Status: ${bookingStatus.textContent}`;
 
   window.open(`https://wa.me/${adminNumber}?text=${encodeURIComponent(message)}`, "_blank");
