@@ -174,16 +174,11 @@ bookBtn.addEventListener("click", () => {
   openInfo("Booking Confirmed", `Your ${selectedRide} ride has been confirmed. Estimated fare is ₹${currentFare}.`);
   startBookingFlow();
 });
-
-wwhatsappBtn.addEventListener("click", () => {
+document.getElementById("whatsappBtn").addEventListener("click", function() {
   if (!validateBooking()) return;
+  if (currentFare === 0) calculateFare();
 
-  if (currentFare === 0) {
-    calculateFare();
-  }
-
-  const adminNumber = "919989556929"; // replace with your admin WhatsApp number
-
+  const adminNumber = "919989556929";
   const message = `New RideGo Booking
 Name: ${nameInput.value}
 Phone: ${phoneInput.value}
@@ -191,35 +186,9 @@ Pickup: ${pickupInput.value}
 Drop: ${dropInput.value}
 Distance: ${distanceInput.value} km
 Ride Type: ${selectedRide}
-Fare: ₹${currentFare}
+Fare: Rs ${currentFare}
 Status: ${bookingStatus.textContent}`;
 
-  const url = `https://wa.me/${adminNumber}?text=${encodeURIComponent(message)}`;
-  window.open(url, "_blank");
+  window.open(`https://wa.me/${adminNumber}?text=${encodeURIComponent(message)}`, "_blank");
 });
-function sendToWhatsApp() {
-  let name = document.getElementById("name");
-  let phone = document.getElementById("phone");
-  let pickup = document.getElementById("pickup");
-  let drop = document.getElementById("drop");
-  let distance = document.getElementById("distance");
 
-  if (!name || !phone || !pickup || !drop || !distance) {
-    alert("One or more input IDs are wrong");
-    return;
-  }
-
-  let adminNumber = "919989556929";
-
-  let message =
-    "New RideGo Booking\n" +
-    "Name: " + name.value + "\n" +
-    "Phone: " + phone.value + "\n" +
-    "Pickup: " + pickup.value + "\n" +
-    "Drop: " + drop.value + "\n" +
-    "Distance: " + distance.value + " km";
-
-  let url = "https://wa.me/" + adminNumber + "?text=" + encodeURIComponent(message);
-
-  window.open(url, "_blank");
-}
