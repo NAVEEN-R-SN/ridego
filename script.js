@@ -194,7 +194,7 @@ document.getElementById("whatsappBtn").addEventListener("click", function() {
   const availableDrivers = drivers[selectedRide.toLowerCase()] || drivers.mini;
   const randomDriver = availableDrivers[Math.floor(Math.random() * availableDrivers.length)];
 
-  const adminNumber = "919989556929";
+  const adminNumber = "919880017242";
   const message = `New RideGo Booking
 Name: ${nameInput.value}
 Phone: ${phoneInput.value}
